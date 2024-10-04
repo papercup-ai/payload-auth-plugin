@@ -2,13 +2,12 @@ import type { PayloadRequest } from 'payload'
 import * as oauth from 'oauth4webapi'
 import type { AccountInfo, OIDCProviderConfig } from '../../types'
 import { getCallbackURL } from '../utils/cb'
-import { AuthError } from '../error'
 import { parseCookies } from '../utils/cookies'
+import { AuthenticationFailed, MissingOrInvalidParams, MissingOrInvalidSession } from '../error'
 
 export async function OIDCCallback(
   request: PayloadRequest,
   providerConfig: OIDCProviderConfig,
-  errorRedirectPath: string,
   session_callback: (claims: AccountInfo) => Promise<Response>,
 ): Promise<Response> {
   const parsedCookies = parseCookies(request.headers.get('Cookie')!)
@@ -17,7 +16,7 @@ export async function OIDCCallback(
   const nonce = parsedCookies['__session-oauth-nonce']
 
   if (!code_verifier) {
-    throw Error('Invalid session')
+    throw new MissingOrInvalidSession()
   }
 
   const { client_id, client_secret, issuer, algorithm, profile } = providerConfig
@@ -38,7 +37,7 @@ export async function OIDCCallback(
   const params = oauth.validateAuthResponse(as, client, current_url)
 
   if (oauth.isOAuth2Error(params)) {
-    return AuthError(request, errorRedirectPath, 'Invalid params')
+    throw new MissingOrInvalidParams()
   }
 
   const response = await oauth.authorizationCodeGrantRequest(
@@ -51,7 +50,7 @@ export async function OIDCCallback(
   const challenges = oauth.parseWwwAuthenticateChallenges(response)
 
   if (challenges) {
-    return AuthError(request, errorRedirectPath, 'Failed to authenticate')
+    throw new AuthenticationFailed()
   }
 
   const token_result = await oauth.processAuthorizationCodeOpenIDResponse(
@@ -62,14 +61,14 @@ export async function OIDCCallback(
   )
 
   if (oauth.isOAuth2Error(token_result)) {
-    return AuthError(request, errorRedirectPath, 'Failed to authenticate')
+    throw new AuthenticationFailed()
   }
 
   const claims = oauth.getValidatedIdTokenClaims(token_result)
   const userInfoResponse = await oauth.userInfoRequest(as, client, token_result.access_token)
 
   if (oauth.parseWwwAuthenticateChallenges(userInfoResponse)) {
-    return AuthError(request, errorRedirectPath, 'Failed to authenticate')
+    throw new AuthenticationFailed()
   }
 
   const result = await oauth.processUserInfoResponse(as, client, claims.sub, userInfoResponse)

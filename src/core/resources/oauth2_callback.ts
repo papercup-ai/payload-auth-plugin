@@ -2,13 +2,12 @@ import type { PayloadRequest } from 'payload'
 import * as oauth from 'oauth4webapi'
 import type { AccountInfo, OAuth2ProviderConfig } from '../../types'
 import { getCallbackURL } from '../utils/cb'
-import { AuthError } from '../error'
 import { parseCookies } from '../utils/cookies'
+import { AuthenticationFailed, MissingOrInvalidParams, MissingOrInvalidSession } from '../error'
 
 export async function OAuth2Callback(
   request: PayloadRequest,
   provider: OAuth2ProviderConfig,
-  errorRedirectPath: string,
   session_callback: (accountInfo: AccountInfo) => Promise<Response>,
 ): Promise<Response> {
   const parsedCookies = parseCookies(request.headers.get('Cookie')!)
@@ -17,7 +16,7 @@ export async function OAuth2Callback(
   const state = parsedCookies['__session-oauth-state']
 
   if (!code_verifier) {
-    throw Error('Invalid session')
+    throw new MissingOrInvalidSession()
   }
 
   const client: oauth.Client = {
@@ -33,7 +32,7 @@ export async function OAuth2Callback(
   const params = oauth.validateAuthResponse(as, client, current_url, state!)
 
   if (oauth.isOAuth2Error(params)) {
-    return AuthError(request, errorRedirectPath, 'Invalid params')
+    throw new MissingOrInvalidParams()
   }
 
   const response = await oauth.authorizationCodeGrantRequest(
@@ -47,12 +46,12 @@ export async function OAuth2Callback(
   const challenges = oauth.parseWwwAuthenticateChallenges(response)
 
   if (challenges) {
-    return AuthError(request, errorRedirectPath, 'Failed to authenticate')
+    throw new AuthenticationFailed()
   }
 
   const token_result = await oauth.processAuthorizationCodeOAuth2Response(as, client, response)
   if (oauth.isOAuth2Error(token_result)) {
-    return AuthError(request, errorRedirectPath, 'Failed to authenticate')
+    throw new AuthenticationFailed()
   }
 
   const userInfoResponse = await oauth.userInfoRequest(as, client, token_result.access_token)
