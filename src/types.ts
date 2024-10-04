@@ -7,7 +7,7 @@ export interface AccountInfo {
   email: string
 }
 
-interface BaseConfig {
+interface BaseProviderConfig {
   id: string
   name: string
   scope: string
@@ -29,12 +29,12 @@ export interface ProviderConfig {
   params?: Record<string, string>
 }
 
-export interface OIDCProviderConfig extends BaseConfig, ProviderConfig {
+export interface OIDCProviderConfig extends BaseProviderConfig, ProviderConfig {
   issuer: string
   algorithm: 'oidc'
 }
 
-export interface OAuth2ProviderConfig extends BaseConfig, ProviderConfig {
+export interface OAuth2ProviderConfig extends BaseProviderConfig, ProviderConfig {
   authorization_server: AuthorizationServer
   algorithm: 'oauth2'
 }
@@ -50,6 +50,7 @@ export interface PluginOptions {
    * OAuth Providers
    */
   providers: OAuthProviderConfig[]
+
   /*
    * Accounts collections slug
    * @default {slug: "accounts"}
@@ -70,7 +71,6 @@ export interface PluginOptions {
    * Any path in your application where the users can be redirected in case of errors
    * @default '/login'
    */
-  errorRedirect?: string
 }
 
 export type EndpointOptions = Omit<
