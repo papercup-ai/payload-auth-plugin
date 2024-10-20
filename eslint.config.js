@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
-  extends: ['./eslint-config'],
+  extends: ['./eslint-config', 'plugin:prettier/recommended'],
+  rules: { 'prettier/prettier': 'error' },
   overrides: [
     // Temporary overrides
     {
