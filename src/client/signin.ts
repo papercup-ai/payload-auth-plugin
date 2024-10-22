@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export function signin(provider: string) {
-  redirect('/api/oauth/authorization/' + provider)
+  redirect('/api/admin/oauth/authorization/' + provider)
 }

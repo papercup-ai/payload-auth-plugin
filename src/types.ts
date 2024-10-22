@@ -1,17 +1,10 @@
 import type { AuthorizationServer } from 'oauth4webapi'
 
-export interface AccountInfo {
-  sub: string
-  name: string
-  picture: string
-  email: string
-}
-
 interface BaseProviderConfig {
   id: string
   name: string
   scope: string
-  profile: (profile: Record<string, string | number | boolean | object>) => AccountInfo
+  profile: (profile: Record<string, string | number | boolean | object>) => OAuthAccountInfo
 }
 
 export interface ProviderConfig {
@@ -41,46 +34,9 @@ export interface OAuth2ProviderConfig extends BaseProviderConfig, ProviderConfig
 
 export type OAuthProviderConfig = OIDCProviderConfig | OAuth2ProviderConfig
 
-export interface PluginOptions {
-  /* Enable or disable plugin
-   * @default true
-   */
-  enabled?: boolean
-  /*
-   * OAuth Providers
-   */
-  providers: OAuthProviderConfig[]
-
-  /*
-   * Accounts collections slug
-   * @default {slug: "accounts"}
-   */
-  accountsCollection?: {
-    slug: string
-  }
-  /*
-   * Users collection slug.
-   * @default "users"
-   */
-  usersCollectionSlug?: string
-  /*
-   * @default '/admin'
-   */
-  successRedirect?: string
-  /*
-   * Any path in your application where the users can be redirected in case of errors
-   * @default '/login'
-   */
+export interface OAuthAccountInfo {
+  sub: string
+  name: string
+  picture: string
+  email: string
 }
-
-export type EndpointOptions = Omit<
-  PluginOptions,
-  'providers' | 'buttonProps' | 'placeAuthComponent' | 'enabled'
-> & {
-  providers: Record<string, OAuthProviderConfig>
-}
-
-export type SessionOptions = Omit<
-  PluginOptions,
-  'providers' | 'buttonProps' | 'buttonComponent' | 'enabled'
->

@@ -1,11 +1,6 @@
-import type { PayloadRequest } from 'payload'
-
-export function getCallbackURL(request: PayloadRequest): URL {
-  const callback_url = new URL(request.url as string)
-  callback_url.pathname = callback_url.pathname.replace(/\/authorization\//, '/callback/')
-
-  callback_url.host = request.headers.get('x-forwarded-host') || callback_url.host
+export function getCallbackURL(appType: 'admin' | 'app', provider: string): URL {
+  const callback_url = new URL(process.env.AUTH_BASE_URL as string)
+  callback_url.pathname = `/api/${appType}/oauth/callback/${provider}`
   callback_url.search = ''
-
   return callback_url
 }

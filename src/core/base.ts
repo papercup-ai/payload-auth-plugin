@@ -1,6 +1,6 @@
 import { CollectionConfig } from 'payload'
-import { OAuthProviderConfig as OAuthProvider } from '../../types'
-import { constructAccountsCollection } from './collections'
+import { OAuthProviderConfig as OAuthProvider } from '../types'
+import { constructAccountsCollection } from './collections/accounts'
 
 export class BasePluginConfig {
   readonly #providers: Record<string, OAuthProvider> = {}

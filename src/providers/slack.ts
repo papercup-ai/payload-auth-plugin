@@ -1,4 +1,4 @@
-import type { AccountInfo, OIDCProviderConfig, ProviderConfig } from '../types'
+import type { OAuthAccountInfo, OIDCProviderConfig, ProviderConfig } from '../types'
 
 type GoogleAuthConfig = ProviderConfig
 
@@ -10,7 +10,7 @@ function SlackAuthProvider(config: GoogleAuthConfig): OIDCProviderConfig {
     issuer: 'https://slack.com',
     name: 'Slack',
     algorithm: 'oidc',
-    profile: (profile): AccountInfo => {
+    profile: (profile): OAuthAccountInfo => {
       return {
         sub: profile.sub as string,
         name: profile.name as string,

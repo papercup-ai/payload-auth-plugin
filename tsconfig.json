@@ -33,6 +33,6 @@
     "**/*.spec.js",
     "**/*.spec.ts",
     "node_modules",
-    ".eslintrc.js"
+    "eslint.config.js"
   ]
 }

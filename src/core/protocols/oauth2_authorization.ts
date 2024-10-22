@@ -1,32 +1,25 @@
 import * as oauth from 'oauth4webapi'
-import type { PayloadRequest } from 'payload'
-import type { OIDCProviderConfig } from '../../types'
+import type { OAuth2ProviderConfig } from '../../types'
 import { getCallbackURL } from '../utils/cb'
 
-export async function OIDCAuthorization(
-  request: PayloadRequest,
-  providerConfig: OIDCProviderConfig,
-): Promise<Response> {
-  const callback_url = getCallbackURL(request)
+export async function OAuth2Authorization(providerConfig: OAuth2ProviderConfig): Promise<Response> {
+  const callback_url = getCallbackURL('admin', providerConfig.id)
   const code_verifier = oauth.generateRandomCodeVerifier()
   const code_challenge = await oauth.calculatePKCECodeChallenge(code_verifier)
   const code_challenge_method = 'S256'
-  const { client_id, client_secret, issuer, algorithm, scope } = providerConfig
+
+  const { authorization_server, client_id, scope } = providerConfig
 
   const client: oauth.Client = {
     client_id,
-    client_secret,
-    token_endpoint_auth_method: 'client_secret_basic',
   }
-  const issuer_url = new URL(issuer)
-  const as = await oauth
-    .discoveryRequest(issuer_url, { algorithm })
-    .then(response => oauth.processDiscoveryResponse(issuer_url, response))
+
+  const as = authorization_server
 
   const cookies: string[] = []
   const cookieMaxage = new Date(Date.now() + 300 * 1000)
 
-  const authorizationURL = new URL(as.authorization_endpoint!) // eslint-disable-line
+  const authorizationURL = new URL(as.authorization_endpoint!)
   authorizationURL.searchParams.set('client_id', client.client_id)
   authorizationURL.searchParams.set('redirect_uri', callback_url.toString())
   authorizationURL.searchParams.set('response_type', 'code')
@@ -35,10 +28,10 @@ export async function OIDCAuthorization(
   authorizationURL.searchParams.set('code_challenge_method', code_challenge_method)
 
   if (as.code_challenge_methods_supported?.includes('S256') !== true) {
-    const nonce = oauth.generateRandomNonce()
-    authorizationURL.searchParams.set('nonce', nonce)
+    const state = oauth.generateRandomState()
+    authorizationURL.searchParams.set('state', state)
     cookies.push(
-      `__session-oauth-nonce=${nonce};Path=/;HttpOnly;SameSite=lax;Expires=${cookieMaxage.toString()}`,
+      `__session-oauth-state=${state};Path=/;HttpOnly;SameSite=lax;Expires=${cookieMaxage.toString()}`,
     )
   }
   cookies.push(

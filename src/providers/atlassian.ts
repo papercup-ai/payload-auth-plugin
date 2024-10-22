@@ -1,5 +1,5 @@
 import type * as oauth from 'oauth4webapi'
-import type { AccountInfo, OAuth2ProviderConfig, ProviderConfig } from '../types'
+import type { OAuth2ProviderConfig, OAuthAccountInfo, ProviderConfig } from '../types'
 
 const algorithm = 'oauth2'
 
@@ -20,7 +20,7 @@ function AtlassianAuthProvider(config: AtlassianAuthConfig): OAuth2ProviderConfi
     name: 'Atlassian',
     algorithm,
     scope: 'read:me read:account',
-    profile: (profile): AccountInfo => {
+    profile: (profile): OAuthAccountInfo => {
       return {
         sub: profile.account_id as string,
         name: profile.name as string,

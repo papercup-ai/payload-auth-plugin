@@ -43,3 +43,9 @@ export class AuthenticationFailed extends AuthError {
     super('Failed to authenticate')
   }
 }
+
+export class UserNotFound extends AuthError {
+  constructor() {
+    super('User not found')
+  }
+}
