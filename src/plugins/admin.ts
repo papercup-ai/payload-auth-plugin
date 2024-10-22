@@ -3,6 +3,7 @@ import { BasePluginConfig } from '../core/base'
 import { EndpointFactory } from '../core/endpoints'
 import { OAuthProviderConfig } from '../types'
 import { PayloadSession } from '../core/session/payload'
+import { InvalidBaseURL } from '../core/error'
 
 interface PluginOptions {
   /* Enable or disable plugin
@@ -35,6 +36,10 @@ export const adminAuthPlugin =
 
     if (pluginOptions.enabled === false) {
       return config
+    }
+
+    if (!process.env.AUTH_BASE_URL) {
+      throw new InvalidBaseURL()
     }
 
     config.admin = {

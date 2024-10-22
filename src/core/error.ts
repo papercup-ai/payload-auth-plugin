@@ -7,7 +7,11 @@ class AuthError extends Error {
     this.stack = ''
   }
 }
-
+export class InvalidBaseURL extends AuthError {
+  constructor() {
+    super('Missing or invalid base URL')
+  }
+}
 export class InvalidProvider extends AuthError {
   constructor() {
     super('Invalid Provider')
