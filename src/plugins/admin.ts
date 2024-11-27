@@ -1,9 +1,10 @@
 import type { Config, Plugin } from 'payload'
-import { BasePluginConfig } from '../core/base'
 import { EndpointFactory } from '../core/endpoints'
 import { OAuthProviderConfig } from '../types'
 import { PayloadSession } from '../core/session/payload'
 import { InvalidBaseURL } from '../core/error'
+import { buildAccountsCollection } from '../core/collections/admin/accounts'
+import { mapProviders } from '../providers/utils'
 
 interface PluginOptions {
   /* Enable or disable plugin
@@ -19,9 +20,7 @@ interface PluginOptions {
    * Accounts collections slug
    * @default {slug: "accounts"}
    */
-  accountsCollection?: {
-    slug: string
-  }
+  accountsCollectionSlug?: string
   /*
    * Users collection slug.
    * @default "users"
@@ -46,25 +45,23 @@ export const adminAuthPlugin =
       ...(config.admin ?? {}),
     }
 
-    const { accountsCollection, usersCollectionSlug, providers } = pluginOptions
-
-    const basePluginConfig = new BasePluginConfig(
+    const {
+      accountsCollectionSlug = 'accounts',
+      usersCollectionSlug = 'users',
       providers,
-      usersCollectionSlug ?? 'users',
-      accountsCollection?.slug ?? 'accounts',
-    )
+    } = pluginOptions
 
     const session = new PayloadSession({
-      accountsCollectionSlug: accountsCollection?.slug ?? 'accounts',
-      usersCollectionSlug: usersCollectionSlug ?? 'users',
+      accountsCollectionSlug: accountsCollectionSlug,
+      usersCollectionSlug: usersCollectionSlug,
     })
 
-    const endpoints = new EndpointFactory(basePluginConfig.getProviders())
+    const endpoints = new EndpointFactory(mapProviders(providers))
 
     // Create accounts collection if doesn't exists
     config.collections = [
       ...(config.collections ?? []),
-      basePluginConfig.generateAccountsCollection(),
+      buildAccountsCollection(accountsCollectionSlug, usersCollectionSlug),
     ]
 
     config.endpoints = [

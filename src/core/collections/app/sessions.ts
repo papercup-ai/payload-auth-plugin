@@ -1,14 +1,11 @@
 import { CollectionConfig } from 'payload'
 
-export function constructAccountsCollection(
-  accountsCollectionSlug: string,
+export function buildSessionsCollection(
+  sessionsCollectionSlug: string,
   usersCollectionSlug: string,
 ) {
-  const accountsCollection: CollectionConfig = {
-    slug: accountsCollectionSlug,
-    admin: {
-      useAsTitle: 'id',
-    },
+  return {
+    slug: sessionsCollectionSlug,
     access: {
       read: () => true,
       create: () => false,
@@ -16,14 +13,6 @@ export function constructAccountsCollection(
       delete: () => false,
     },
     fields: [
-      {
-        name: 'name',
-        type: 'text',
-      },
-      {
-        name: 'picture',
-        type: 'text',
-      },
       {
         name: 'user',
         type: 'relationship',
@@ -33,22 +22,25 @@ export function constructAccountsCollection(
         label: 'User',
       },
       {
-        name: 'issuerName',
-        type: 'text',
-        required: true,
-        label: 'Issuer Name',
-      },
-      {
-        name: 'scope',
+        name: 'sessionId',
         type: 'text',
         required: true,
       },
       {
-        name: 'sub',
+        name: 'expiresAt',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'userAgent',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'ipAddress',
         type: 'text',
         required: true,
       },
     ],
-  }
-  return accountsCollection
+  } satisfies CollectionConfig
 }

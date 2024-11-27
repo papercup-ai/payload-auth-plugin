@@ -39,3 +39,37 @@ export function OAuthHandlers(
       throw new InvalidOAuthResource()
   }
 }
+
+//export function CredentialsHandlers(
+//  request: PayloadRequest,
+//  resource: string,
+//  provider: CredentialsProviderConfig,
+//  sessionCallBack: (oauthAccountInfo: OAuthAccountInfo) => Promise<Response>,
+//): Promise<Response> {
+//  if (!provider) {
+//    throw new InvalidProvider()
+//  }
+//
+//  switch (resource) {
+//    case 'authorization':
+//      switch (provider.algorithm) {
+//        case 'oidc':
+//          return OIDCAuthorization(provider)
+//        case 'oauth2':
+//          return OAuth2Authorization(provider)
+//        default:
+//          throw new InvalidOAuthAlgorithm()
+//      }
+//    case 'callback':
+//      switch (provider.algorithm) {
+//        case 'oidc':
+//          return OIDCCallback(request, provider, sessionCallBack)
+//        case 'oauth2':
+//          return OAuth2Callback(request, provider, sessionCallBack)
+//        default:
+//          throw new InvalidOAuthAlgorithm()
+//      }
+//    default:
+//      throw new InvalidOAuthResource()
+//  }
+//}

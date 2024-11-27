@@ -40,3 +40,20 @@ export interface OAuthAccountInfo {
   picture: string
   email: string
 }
+
+export type CredentialsProviderConfig = {
+  id: string
+  name: string
+  verfiyEmail?: boolean
+  passwordless?: boolean
+  mfa?: 'OTP' | 'TOTP' | 'None'
+  signinCallback?: () => void
+  signupCallback?: () => void
+}
+
+export interface CredentialsAccountInfo {
+  name: string
+  email: string
+}
+
+export type ProvidersConfig = OAuthProviderConfig | CredentialsProviderConfig
