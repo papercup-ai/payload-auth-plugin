@@ -125,12 +125,10 @@ Configuration options allow you to extend the plugin to customize the flow and U
 
 | Options | Description | Default |
 | --- | --- | :--: |
-| `enabled`: ***boolean*** | Disable or enable plugin | true |
-| `accountsCollection`: ***object*** | Accounts collection configuration parameters | {slug: accounts} |
-| `usersCollectionSlug`: ***string*** | Payload users collection slug | user |
-| `successRedirect`: ***string*** | Specify the path to redirect users on successful signin attempt | `/admin` |
-| `errorRedirect`: ***string*** | Specify the path to redirect users on failed signin attempt | `/admin/login` |
-
+| `enabled`: ***boolean*** | Disable or enable plugin | true [OPTIONAL] |
+| `providers`: ***array*** | Array of OAuth providers | [REQUIRED] |
+| `accountsCollectionSlug`: ***string*** | Accounts collection  | accounts [OPTIONAL] |
+| `usersCollectionSlug`: ***string*** | Payload users collection slug | user [OPTIONAL] |
 
 ## Open Authorization/OpenID Connect Protocol Based Providers
 This plugin includes multiple pre-configured Open Authorization (OAuth) and OpenID Connect protocol-based providers. These configurations streamline the developer experience and integrations, ensuring the authentication process is seamless and uniform across different providers.
@@ -155,7 +153,6 @@ Ordered according to the priority
 - Support multiple providers [Feat] ✅
 - Add options to customize the sign-in button [Feat] ✅
 - Handle errors gracefully [Fix] ✅
-- Support SAML/SSO sign-in [Feat] ⚙
 - Support magic link [Feat] ⚙
 - Support Passkey sign-in [Feat]❓
 - Support front-end app authentication [Feat] ⚙
