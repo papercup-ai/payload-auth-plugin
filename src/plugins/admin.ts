@@ -18,7 +18,7 @@ interface PluginOptions {
 
   /*
    * Accounts collections slug
-   * @default {slug: "accounts"}
+   * @default "accounts"
    */
   accountsCollectionSlug?: string
   /*
