@@ -6,6 +6,8 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+import { adminAuthPlugin } from '../../../dist'
+import { GoogleAuthProvider } from '../../../dist/providers'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -18,6 +20,9 @@ export default buildConfig({
     user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
+    },
+    components: {
+      afterLogin: ['/components/Auth#AuthComponent'],
     },
   },
   collections: [Users, Media],
@@ -32,6 +37,13 @@ export default buildConfig({
   sharp,
   plugins: [
     payloadCloudPlugin(),
-    // storage-adapter-placeholder
+    adminAuthPlugin({
+      providers: [
+        GoogleAuthProvider({
+          client_id: process.env.GOOGLE_CLIENT_ID!,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        }),
+      ],
+    }),
   ],
 })

@@ -98,10 +98,10 @@ export class PayloadSession {
     cookies.push(
       `${payload.config.cookiePrefix!}-token=${token};Path=/;HttpOnly;SameSite=lax;Expires=${cookieExpiration.toString()}`,
     )
-    cookies.push(`__session-oauth-state='';Path=/;HttpOnly;SameSite=lax;Expires=0`)
-    cookies.push(`__session-oauth-nonce='';Path=/;HttpOnly;SameSite=lax;Expires=0`)
-    cookies.push(`__session-code-verifier='';Path=/;HttpOnly;SameSite=lax;Expires=0`)
-
+    const expired = 'Thu, 01 Jan 1970 00:00:00 GMT'
+    cookies.push(`__session-oauth-state=; Path=/; HttpOnly; SameSite=Lax; Expires=${expired}`)
+    cookies.push(`__session-oauth-nonce=; Path=/; HttpOnly; SameSite=Lax; Expires=${expired}`)
+    cookies.push(`__session-code-verifier=; Path=/; HttpOnly; SameSite=Lax; Expires=${expired}`)
     const successURL = new URL(process.env.AUTH_BASE_URL as string)
     successURL.pathname = this.#successPath
     successURL.search = ''
