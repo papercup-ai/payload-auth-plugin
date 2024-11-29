@@ -1,5 +1,43 @@
 
 
+## [0.4.0](https://github.com/sourabpramanik/payload-auth-plugin/compare/v0.3.2...v0.4.0) (2024-11-29)
+
+### Chores
+
+* update doc ([e3cef32](https://github.com/sourabpramanik/payload-auth-plugin/commit/e3cef32bbe3becb7e423c03fa32a0b0427431741))
+* bump ([9c225da](https://github.com/sourabpramanik/payload-auth-plugin/commit/9c225dab53225197bd0b121a7e695c7764cc0124))
+
+### Bug Fixes
+
+* remove cookies ([953acf8](https://github.com/sourabpramanik/payload-auth-plugin/commit/953acf8e1b7877055e8e18488be7fe96b78dd615))
+* update implementation ([8730d39](https://github.com/sourabpramanik/payload-auth-plugin/commit/8730d3989bc4c56b1b56462bd224a18044318c2b))
+* create base type and rm error type ([6f602e8](https://github.com/sourabpramanik/payload-auth-plugin/commit/6f602e8b66f627a627a83d506f7db6e0df86bd94))
+
+### Features
+
+* adds check for base url in env ([49a04a0](https://github.com/sourabpramanik/payload-auth-plugin/commit/49a04a0f5b8ff376b1c5ed48b74a06fd254e119c))
+* new implementation ([4cabc2e](https://github.com/sourabpramanik/payload-auth-plugin/commit/4cabc2ef67228809d7728fe69329d103df4765c2))
+* updates error handling ([2380aed](https://github.com/sourabpramanik/payload-auth-plugin/commit/2380aeda896c594a043dae768bcb5ceb023fd8d9))
+
+## [0.3.3](https://github.com/sourabpramanik/payload-auth-plugin/compare/v0.3.2...v0.3.3) (2024-11-29)
+
+### Chores
+
+* update doc ([e3cef32](https://github.com/sourabpramanik/payload-auth-plugin/commit/e3cef32bbe3becb7e423c03fa32a0b0427431741))
+* bump ([9c225da](https://github.com/sourabpramanik/payload-auth-plugin/commit/9c225dab53225197bd0b121a7e695c7764cc0124))
+
+### Bug Fixes
+
+* remove cookies ([953acf8](https://github.com/sourabpramanik/payload-auth-plugin/commit/953acf8e1b7877055e8e18488be7fe96b78dd615))
+* update implementation ([8730d39](https://github.com/sourabpramanik/payload-auth-plugin/commit/8730d3989bc4c56b1b56462bd224a18044318c2b))
+* create base type and rm error type ([6f602e8](https://github.com/sourabpramanik/payload-auth-plugin/commit/6f602e8b66f627a627a83d506f7db6e0df86bd94))
+
+### Features
+
+* adds check for base url in env ([49a04a0](https://github.com/sourabpramanik/payload-auth-plugin/commit/49a04a0f5b8ff376b1c5ed48b74a06fd254e119c))
+* new implementation ([4cabc2e](https://github.com/sourabpramanik/payload-auth-plugin/commit/4cabc2ef67228809d7728fe69329d103df4765c2))
+* updates error handling ([2380aed](https://github.com/sourabpramanik/payload-auth-plugin/commit/2380aeda896c594a043dae768bcb5ceb023fd8d9))
+
 ## [0.3.2](https://github.com/sourabpramanik/payload-auth-plugin/compare/v0.3.1...v0.3.2) (2024-09-24)
 
 
