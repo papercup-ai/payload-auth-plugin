@@ -1,6 +1,6 @@
 {
   "name": "@papercup/payload-auth-plugin",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "author": "Papercup <claudiu@papercup.com>",
   "license": "MIT",
   "homepage:": "https://github.com/papercup-ai/payload-auth-plugin",
