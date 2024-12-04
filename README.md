@@ -146,6 +146,7 @@ Some providers may require additional domain-specific metadata that cannot be ge
 - Facebook [Doc](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow)
 - GitLab [Doc](https://docs.gitlab.com/ee/api/oauth2.html)
 - Slack [Doc](https://api.slack.com/authentication)
+- Auth0 [Doc](https://auth0.com/docs/quickstart/webapp/nextjs/interactive)
 
 ## Roadmap
 Ordered according to the priority
