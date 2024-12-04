@@ -26,6 +26,11 @@ interface PluginOptions {
    * @default "users"
    */
   usersCollectionSlug?: string
+
+  /*
+   * Accounts collection admin group
+   */
+  accountsCollectionAdminGroup?: string
 }
 
 export const adminAuthPlugin =
@@ -48,6 +53,7 @@ export const adminAuthPlugin =
     const {
       accountsCollectionSlug = 'accounts',
       usersCollectionSlug = 'users',
+      accountsCollectionAdminGroup = 'Collections',
       providers,
     } = pluginOptions
 
@@ -61,7 +67,11 @@ export const adminAuthPlugin =
     // Create accounts collection if doesn't exists
     config.collections = [
       ...(config.collections ?? []),
-      buildAccountsCollection(accountsCollectionSlug, usersCollectionSlug),
+      buildAccountsCollection(
+        accountsCollectionSlug,
+        usersCollectionSlug,
+        accountsCollectionAdminGroup,
+      ),
     ]
 
     config.endpoints = [

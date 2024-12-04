@@ -20,6 +20,11 @@ interface PluginOptions {
    * OAuth Providers
    */
   providers: ProvidersConfig[]
+
+  /*
+  * The group under which to place the accounts collection in the admin UI
+  */
+  accountsCollectionAdminGroup?: string
 }
 
 export const appAuthPlugin =
@@ -44,12 +49,17 @@ export const appAuthPlugin =
     const usersCollectionSlug = appName + '_users'
     const sessionsCollectionSlug = appName + '_sessions'
     const verificationsCollectionSlug = appName + '_verifications'
+    const accountsCollectionAdminGroup = appName + '_Collections'
 
     ///   const endpoints = new EndpointFactory(mapProviders(providers))
 
     config.collections = [
       ...(config.collections ?? []),
-      buildAccountsCollection(accountsCollectionSlug, usersCollectionSlug),
+      buildAccountsCollection(
+        accountsCollectionSlug,
+        usersCollectionSlug,
+        accountsCollectionAdminGroup,
+      ),
       buildUsersCollection(usersCollectionSlug),
       buildVerificationCollection(verificationsCollectionSlug),
       buildSessionsCollection(sessionsCollectionSlug, usersCollectionSlug),

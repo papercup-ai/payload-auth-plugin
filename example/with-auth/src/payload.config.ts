@@ -35,12 +35,13 @@ export default buildConfig({
     idType: 'uuid',
     pool: {
       connectionString: process.env.DATABASE_URI || '',
-      ssl: (process.env.DATABASE_SSL || 'true') === 'true' && {rejectUnauthorized: false},
+      ssl: (process.env.DATABASE_SSL || 'true') === 'true' && { rejectUnauthorized: false },
     },
   }),
   sharp,
   plugins: [
     adminAuthPlugin({
+      accountsCollectionAdminGroup: 'Configuration',
       providers: [
         // GoogleAuthProvider({
         //   client_id: process.env.GOOGLE_CLIENT_ID!,

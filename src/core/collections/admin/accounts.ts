@@ -3,11 +3,13 @@ import { CollectionConfig } from 'payload'
 export function buildAccountsCollection(
   accountsCollectionSlug: string,
   usersCollectionSlug: string,
+  accountsCollectionAdminGroup: string,
 ) {
   const accountsCollection: CollectionConfig = {
     slug: accountsCollectionSlug,
     admin: {
       useAsTitle: 'id',
+      group: accountsCollectionAdminGroup,
     },
     access: {
       read: () => true,
