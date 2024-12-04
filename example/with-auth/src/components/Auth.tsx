@@ -4,13 +4,13 @@ export const AuthComponent = () => {
     <form
       action={async () => {
         'use server'
-        signin('google')
+        signin('auth0')
       }}
-      method="GET"
+      method="POST"
       className="w-full"
     >
       <button type="submit" className="w-full !my-0">
-        Sign in with Google
+        Sign in with Auth0
       </button>
     </form>
   )
