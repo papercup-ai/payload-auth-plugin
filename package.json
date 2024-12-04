@@ -2,6 +2,7 @@
   "name": "@papercup/payload-auth-plugin",
   "version": "0.6.1",
   "author": "Papercup <claudiu@papercup.com>",
+  "type": "module",
   "license": "MIT",
   "homepage:": "https://github.com/papercup-ai/payload-auth-plugin",
   "repository": "git@github.com:papercup-ai/payload-auth-plugin.git",
