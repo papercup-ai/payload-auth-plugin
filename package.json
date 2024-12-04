@@ -1,10 +1,10 @@
 {
   "name": "payload-auth-plugin",
   "version": "0.6.0",
-  "author": "Sourab Pramanik<shubpramanik241@gmail.com>",
+  "author": "Papercup <claudiu@papercup.com>",
   "license": "MIT",
-  "homepage:": "https://github.com/sourabpramanik/payload-auth-plugin",
-  "repository": "git@github.com:sourabpramanik/payload-auth-plugin.git",
+  "homepage:": "https://github.com/papercup-ai/payload-auth-plugin",
+  "repository": "git@github.com:papercup-ai/payload-auth-plugin.git",
   "description": "Authentication plugin for Payload CMS",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
