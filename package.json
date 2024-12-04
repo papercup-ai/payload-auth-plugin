@@ -1,5 +1,5 @@
 {
-  "name": "payload-auth-plugin",
+  "name": "@papercup/payload-auth-plugin",
   "version": "0.6.0",
   "author": "Papercup <claudiu@papercup.com>",
   "license": "MIT",
