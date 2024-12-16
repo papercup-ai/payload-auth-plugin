@@ -12,7 +12,9 @@ export function buildAccountsCollection(
       group: accountsCollectionAdminGroup,
     },
     access: {
-      read: () => true,
+      read: ({ req: { user } }) => {
+        return Boolean(user)
+      },
       create: () => false,
       update: () => false,
       delete: () => false,
