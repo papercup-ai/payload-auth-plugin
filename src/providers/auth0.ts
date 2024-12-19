@@ -3,6 +3,7 @@ import type { OAuth2ProviderConfig, OAuthAccountInfo, ProviderConfig } from '../
 
 type Auth0AuthConfig = ProviderConfig & {
   authorisation_server: oauth.AuthorizationServer
+  rolesKey: string
 }
 
 function Auth0AuthProvider(config: Auth0AuthConfig): OAuth2ProviderConfig {
@@ -19,6 +20,7 @@ function Auth0AuthProvider(config: Auth0AuthConfig): OAuth2ProviderConfig {
         name: profile.name as string,
         email: profile.email as string,
         picture: profile.picture as string,
+        roles: profile[config.rolesKey] as string[],
       }
     },
   }

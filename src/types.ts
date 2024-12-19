@@ -4,7 +4,7 @@ interface BaseProviderConfig {
   id: string
   name: string
   scope: string
-  profile: (profile: Record<string, string | number | boolean | object>) => OAuthAccountInfo
+  profile: (profile: Record<string, string | string[] | number | boolean | object | undefined >) => OAuthAccountInfo
 }
 
 export interface ProviderConfig {
@@ -39,6 +39,7 @@ export interface OAuthAccountInfo {
   name: string
   picture: string
   email: string
+  roles?: string[]
 }
 
 export type CredentialsProviderConfig = {

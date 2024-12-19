@@ -52,6 +52,11 @@ export function buildAccountsCollection(
         type: 'text',
         required: true,
       },
+      {
+        name: 'roles',
+        type: 'text',
+        hasMany: true,
+      }
     ],
   }
   return accountsCollection
