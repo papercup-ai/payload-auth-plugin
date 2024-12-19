@@ -68,6 +68,7 @@ export class PayloadSession {
           name: oauthAccountInfo.name,
           picture: oauthAccountInfo.picture,
           user: userID,
+          roles: oauthAccountInfo.roles,
         },
       })
     }
