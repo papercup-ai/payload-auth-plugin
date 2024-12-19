@@ -1,5 +1,7 @@
 
 
+## [0.6.4](https://github.com/papercup-ai/payload-auth-plugin/compare/v0.6.3...v0.6.4) (2024-12-19)
+
 ## [0.6.3](https://github.com/papercup-ai/payload-auth-plugin/compare/v0.6.2...v0.6.3) (2024-12-16)
 
 ## [0.6.2](https://github.com/papercup-ai/payload-auth-plugin/compare/v0.6.1...v0.6.2) (2024-12-04)
