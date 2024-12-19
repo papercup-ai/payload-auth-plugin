@@ -55,6 +55,7 @@ export class PayloadSession {
           scope,
           name: oauthAccountInfo.name,
           picture: oauthAccountInfo.picture,
+          roles: oauthAccountInfo.roles,
         },
       })
     } else {
