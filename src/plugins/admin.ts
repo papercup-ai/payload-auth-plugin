@@ -31,6 +31,11 @@ interface PluginOptions {
    * Accounts collection admin group
    */
   accountsCollectionAdminGroup?: string
+
+    /*
+        * Expected roles for the user to be created in the users collection
+     */
+    expectedRoles?: string[]
 }
 
 export const adminAuthPlugin =
@@ -55,6 +60,7 @@ export const adminAuthPlugin =
       usersCollectionSlug = 'users',
       accountsCollectionAdminGroup = 'Collections',
       providers,
+        expectedRoles
     } = pluginOptions
 
     const session = new PayloadSession({
@@ -78,7 +84,7 @@ export const adminAuthPlugin =
       ...(config.endpoints ?? []),
       ...endpoints.payloadOAuthEndpoints({
         sessionCallback: (oauthAccountInfo, scope, issuerName, basePayload) =>
-          session.createSession(oauthAccountInfo, scope, issuerName, basePayload),
+          session.createSession(oauthAccountInfo, scope, issuerName, basePayload, expectedRoles),
       }),
     ]
     return config

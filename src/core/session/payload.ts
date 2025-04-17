@@ -2,6 +2,7 @@ import { BasePayload, getCookieExpiration } from 'payload'
 import { UserNotFound } from '../error'
 import jwt from 'jsonwebtoken'
 import { OAuthAccountInfo } from '../../types'
+import { generate } from "generate-password";
 
 type Collections = {
   usersCollectionSlug: string
@@ -15,14 +16,16 @@ export class PayloadSession {
     this.#collections = collections
   }
   async #upsertAccount(
-    oauthAccountInfo: OAuthAccountInfo,
-    scope: string,
-    issuerName: string,
-    payload: BasePayload,
+      oauthAccountInfo: OAuthAccountInfo,
+      scope: string,
+      issuerName: string,
+      payload: BasePayload,
+      expectedRoles?: string[]
   ) {
     let userID: string = ''
 
-    const user = await payload.find({
+    // first we check if the user already exists in the users collection
+    const findUsersResult = await payload.find({
       collection: this.#collections.usersCollectionSlug,
       where: {
         email: {
@@ -31,10 +34,32 @@ export class PayloadSession {
       },
     })
 
-    if (user.docs.length === 0) {
+    const userFound = findUsersResult.docs.length > 0;
+    const auth0AccountInfoHasAnyExpectedRole = oauthAccountInfo.roles && oauthAccountInfo.roles.some((role) => expectedRoles?.includes(role));
+    if (userFound) {
+      // if the user exists, wee assign the userID to the first user found
+      userID = findUsersResult.docs[0].id as string
+    } else if (auth0AccountInfoHasAnyExpectedRole) {
+      // if the user doesn't exist, we create a new user if the user has an expected role
+      const user = await payload.create({
+        collection: "users",
+        data: {
+          email: oauthAccountInfo.email,
+          password: generate({
+            length: 32,
+            numbers: true,
+            symbols: true,
+            lowercase: true,
+            uppercase: true,
+            strict: true,
+          }),
+        },
+      });
+      userID = user.id as string
+    } else {
+      // if the user doesn't exist and doesn't have the expected role, we throw an error
       throw new UserNotFound()
     }
-    userID = user.docs[0].id as string
 
     const accounts = await payload.find({
       collection: this.#collections.accountsCollectionSlug,
@@ -79,8 +104,9 @@ export class PayloadSession {
     scope: string,
     issuerName: string,
     payload: BasePayload,
+    expectedRoles?: string[]
   ) {
-    const userID = await this.#upsertAccount(oauthAccountInfo, scope, issuerName, payload)
+    const userID = await this.#upsertAccount(oauthAccountInfo, scope, issuerName, payload, expectedRoles)
 
     const fieldsToSign = {
       id: userID,
