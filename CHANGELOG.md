@@ -1,5 +1,16 @@
 
 
+## [0.7.0](https://github.com/papercup-ai/payload-auth-plugin/compare/v0.6.4...v0.7.0) (2025-04-17)
+
+### Chores
+
+* update dependencies ([#6](https://github.com/papercup-ai/payload-auth-plugin/issues/6)) ([8170047](https://github.com/papercup-ai/payload-auth-plugin/commit/8170047a28cde5bc1b8baaba929ad1d7282fe323))
+* update version minor ([a74c6f6](https://github.com/papercup-ai/payload-auth-plugin/commit/a74c6f6f2ba2335f9b377a3825d3a9966788d600))
+
+### Features
+
+* create user if auth0 account has expected roles ([e8b8453](https://github.com/papercup-ai/payload-auth-plugin/commit/e8b8453a5ad04d35e2608061f7fae262ee1e7194))
+
 ## [0.6.4](https://github.com/papercup-ai/payload-auth-plugin/compare/v0.6.3...v0.6.4) (2024-12-19)
 
 ## [0.6.3](https://github.com/papercup-ai/payload-auth-plugin/compare/v0.6.2...v0.6.3) (2024-12-16)
