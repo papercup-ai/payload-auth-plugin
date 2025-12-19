@@ -1,4 +1,5 @@
-import { signin } from '../../../../dist/client'
+import { signin } from '@papercup/payload-auth-plugin/client'
+
 export const AuthComponent = () => {
   return (
     <form

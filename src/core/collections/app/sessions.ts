@@ -1,3 +1,18 @@
+/**
+ * @deprecated WORK IN PROGRESS - NOT YET IMPLEMENTED
+ * 
+ * App-level sessions collection for managing user sessions.
+ * Part of the incomplete appAuthPlugin.
+ * 
+ * TODO:
+ * - Implement session creation/validation logic
+ * - Add session refresh mechanism
+ * - Add session revocation
+ * 
+ * Status: Collection structure defined but not actively used.
+ * Admin authentication uses JWT-based sessions via OAuth strategy.
+ */
+
 import { CollectionConfig } from 'payload'
 
 export function buildSessionsCollection(

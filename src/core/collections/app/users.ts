@@ -1,3 +1,13 @@
+/**
+ * @deprecated WORK IN PROGRESS - NOT YET IMPLEMENTED
+ * 
+ * App-level users collection for frontend authentication.
+ * Part of the incomplete appAuthPlugin.
+ * 
+ * Status: Collection structure defined but not actively used.
+ * For admin authentication, Payload's built-in users collection is used.
+ */
+
 import { CollectionConfig } from 'payload'
 import { z } from 'zod'
 

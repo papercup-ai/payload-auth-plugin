@@ -7,7 +7,7 @@
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
-    "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "devsafe": "rimraf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
@@ -15,37 +15,37 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
   },
   "dependencies": {
-    "@payloadcms/db-postgres": "^3.3.0",
-    "@payloadcms/next": "latest",
-    "@payloadcms/payload-cloud": "latest",
-    "@payloadcms/richtext-lexical": "^3.3.0",
-    "cross-env": "^7.0.3",
-    "graphql": "^16.9.0",
-    "next": "15.0.0",
-    "payload": "latest",
-    "react": "19.0.0-rc-65a56d0e-20241020",
-    "react-dom": "19.0.0-rc-65a56d0e-20241020",
-    "sharp": "0.32.6"
+    "@payloadcms/db-postgres": "^3.68.5",
+    "@payloadcms/next": "^3.68.5",
+    "@payloadcms/payload-cloud": "^3.68.5",
+    "@payloadcms/richtext-lexical": "^3.68.5",
+    "cross-env": "^10.1.0",
+    "graphql": "^16.12.0",
+    "next": "15.4.10",
+    "payload": "^3.68.5",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "eslint": "^8.57.1",
-    "eslint-config-next": "15.0.0",
-    "typescript": "5.7.2"
+    "eslint-config-next": "16.0.10",
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": "^18.20.2 || >=20.9.0"
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "npm:types-react@19.0.0-rc.1",
-      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+      "@types/react": "^19.2.7",
+      "@types/react-dom": "^19.2.3"
     }
   },
   "overrides": {
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3"
   }
 }
