@@ -5,6 +5,8 @@ import {PayloadSession} from '../core/session/payload'
 import {InvalidBaseURL} from '../core/error'
 import {buildAccountsCollection} from '../core/collections/admin/accounts'
 import {mapProviders} from '../providers/utils'
+import {createOAuthStrategy} from '../core/auth/oauthStrategy'
+import {createOAuthLoginEndpoint} from '../core/endpoints/oauthLogin'
 
 interface PluginOptions {
     /* Enable or disable plugin
@@ -79,6 +81,27 @@ export const adminAuthPlugin =
                     accountsCollectionAdminGroup,
                 ),
             ]
+            
+            // Add OAuth strategy to the users collection
+            config.collections = config.collections.map((collection) => {
+                if (collection.slug === usersCollectionSlug) {
+                    // Ensure auth is an object (not boolean)
+                    const authConfig = typeof collection.auth === 'object' ? collection.auth : {}
+                    
+                    return {
+                        ...collection,
+                        auth: {
+                            ...authConfig,
+                            // Add OAuth strategy to the collection's auth strategies
+                            strategies: [
+                                ...(authConfig.strategies || []),
+                                createOAuthStrategy(usersCollectionSlug),
+                            ],
+                        },
+                    }
+                }
+                return collection
+            })
 
             config.endpoints = [
                 ...(config.endpoints ?? []),
@@ -86,6 +109,12 @@ export const adminAuthPlugin =
                     sessionCallback: (oauthAccountInfo, scope, issuerName, basePayload) =>
                         session.createSession(oauthAccountInfo, scope, issuerName, basePayload, expectedRoles),
                 }),
+                // Add OAuth login endpoint under /admin path like other OAuth endpoints
+                {
+                    path: '/admin/oauth/login',
+                    method: 'get',
+                    handler: createOAuthLoginEndpoint(),
+                },
             ]
             return config
         }

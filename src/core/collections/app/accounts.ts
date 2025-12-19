@@ -1,3 +1,13 @@
+/**
+ * @deprecated WORK IN PROGRESS - NOT YET IMPLEMENTED
+ * 
+ * App-level accounts collection for OAuth/OIDC provider data.
+ * Part of the incomplete appAuthPlugin.
+ * 
+ * Status: Collection structure defined but not actively used.
+ * See src/core/collections/admin/accounts.ts for working admin accounts collection.
+ */
+
 import { CollectionConfig } from 'payload'
 
 export function buildAccountsCollection(

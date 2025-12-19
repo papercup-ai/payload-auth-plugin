@@ -17,6 +17,7 @@ export class EndpointFactory {
       scope: string,
       issuerName: string,
       payload: BasePayload,
+      req: PayloadRequest,
     ) => Promise<Response>
   }): Endpoint[] {
     return [
@@ -38,6 +39,7 @@ export class EndpointFactory {
                 provider.scope,
                 provider.name,
                 request.payload,
+                request,
               )
             },
           )

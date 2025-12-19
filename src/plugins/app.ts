@@ -1,3 +1,20 @@
+/**
+ * @deprecated WORK IN PROGRESS - NOT YET IMPLEMENTED
+ * 
+ * This plugin is intended for app-level (frontend) authentication,
+ * separate from admin panel authentication.
+ * 
+ * TODO:
+ * - Complete endpoint implementation (currently commented out)
+ * - Implement session management
+ * - Add email verification flow
+ * - Add credentials provider support
+ * - Add MFA/2FA support
+ * 
+ * Status: Collections created but no working endpoints.
+ * Use adminAuthPlugin for admin panel OAuth authentication instead.
+ */
+
 import type { Config, Plugin } from 'payload'
 import { ProvidersConfig } from '../types'
 import { InvalidBaseURL } from '../core/error'

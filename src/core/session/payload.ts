@@ -1,8 +1,8 @@
-import {BasePayload, getCookieExpiration} from 'payload'
+import {BasePayload} from 'payload'
+import {generate} from 'generate-password'
 import {UserNotFound} from '../error'
-import jwt from 'jsonwebtoken'
 import {OAuthAccountInfo} from '../../types'
-import {generate} from "generate-password";
+import {generateOAuthSessionToken, generateOAuthSessionCookie} from '../auth/oauthStrategy'
 
 type Collections = {
     usersCollectionSlug: string
@@ -37,12 +37,13 @@ export class PayloadSession {
         })
 
         const userFound = findUsersResult.docs.length > 0;
+        const noRoleRestrictions = !expectedRoles || expectedRoles.length === 0;
         const auth0AccountInfoHasAnyExpectedRole = oauthAccountInfo.roles && oauthAccountInfo.roles.some((role) => expectedRoles?.includes(role));
         if (userFound) {
             // if the user exists, wee assign the userID to the first user found
             userID = findUsersResult.docs[0].id as string
-        } else if (auth0AccountInfoHasAnyExpectedRole) {
-            // if the user doesn't exist, we create a new user if the user has an expected role
+        } else if (noRoleRestrictions || auth0AccountInfoHasAnyExpectedRole) {
+            // if the user doesn't exist, we create a new user if no role restrictions or user has an expected role
             const user = await payload.create({
                 collection: "users",
                 data: {
@@ -110,44 +111,141 @@ export class PayloadSession {
         expectedRoles?: string[]
     ) {
         const userID = await this.#upsertAccount(oauthAccountInfo, scope, issuerName, payload, expectedRoles)
-
-        const fieldsToSign = {
-            id: userID,
-            email: oauthAccountInfo.email,
+        
+        // Get user details for the session token
+        const user = await payload.findByID({
             collection: this.#collections.usersCollectionSlug,
+            id: userID,
+        })
+        
+        if (!user || !user.email) {
+            throw new Error('User not found or missing email after OAuth validation')
         }
 
-        const cookieExpiration = getCookieExpiration({
-            seconds: 7200,
-        })
-
-        const token = jwt.sign(fieldsToSign, payload.secret, {
-            expiresIn: new Date(cookieExpiration).getTime(),
-        })
-
-        const cookies: string[] = []
-        cookies.push(
-            `${payload.config.cookiePrefix!}-token=${token};Path=/;HttpOnly;SameSite=lax;Expires=${cookieExpiration.toString()}`,
+        // Generate a temporary OAuth session token (JWT, 5 minutes)
+        // This will be set as a cookie client-side and used by the OAuth strategy
+        const sessionToken = generateOAuthSessionToken(
+            userID,
+            user.email as string,
+            this.#collections.usersCollectionSlug,
+            payload.secret
         )
-        const expired = 'Thu, 01 Jan 1970 00:00:00 GMT'
-        cookies.push(`__session-oauth-state=; Path=/; HttpOnly; SameSite=Lax; Expires=${expired}`)
-        cookies.push(`__session-oauth-nonce=; Path=/; HttpOnly; SameSite=Lax; Expires=${expired}`)
-        cookies.push(`__session-code-verifier=; Path=/; HttpOnly; SameSite=Lax; Expires=${expired}`)
+
+        // Generate the cookie string for client-side setting
+        const collection = Object.values(payload.collections).find(
+            (coll: any) => coll.config.slug === this.#collections.usersCollectionSlug
+        )
+        const secure = collection?.config.auth?.cookies?.secure || false
+        const sessionCookie = generateOAuthSessionCookie(sessionToken, secure)
+
+        // Build the success URL (where to redirect after setting the cookie)
         const successURL = new URL(process.env.AUTH_BASE_URL as string)
         successURL.pathname = this.#successPath
         successURL.search = ''
+        
+        // Build the login endpoint URL (will trigger the OAuth strategy and set payload-token)
+        const loginURL = new URL(process.env.AUTH_BASE_URL as string)
+        loginURL.pathname = '/api/admin/oauth/login'
+        loginURL.search = ''
 
-        const res = new Response(null, {
-            status: 302,
+        console.log('[OAuth Session] Generated temporary session token for user:', user.email)
+        console.log('[OAuth Session] Will redirect to:', successURL.href)
+
+        // Return HTML that:
+        // 1. Sets the temporary OAuth session cookie (client-side)
+        // 2. Calls /api/admin/oauth/login to trigger authentication and set payload-token
+        // 3. Redirects to the admin panel
+        const html = `<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Authentication</title>
+    <script>
+        // Set the temporary OAuth session cookie
+        document.cookie = "${sessionCookie}";
+        
+        // Call the /api/admin/oauth/login endpoint to trigger Payload's authentication
+        // This will run the OAuth strategy to authenticate, then manually set
+        // the payload-token cookie in the response
+        fetch("${loginURL.href}", {
+            method: 'GET',
+            credentials: 'include',
             headers: {
-                Location: successURL.href,
+                'Accept': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Authentication successful, redirecting...');
+                // Temporary OAuth flow cookies will be cleared server-side by the endpoint
+                
+                return response.json().then(data => {
+                    console.log('User authenticated:', data);
+                    // Redirect to the admin panel
+                    window.location.href = "${successURL.href}";
+                });
+            } else {
+                console.error('Authentication failed:', response.status);
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').textContent = 'Authentication failed. Please try again.';
+            }
+        })
+        .catch(error => {
+            console.error('Authentication error:', error);
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').textContent = 'Authentication error: ' + error.message;
+        });
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #error {
+            display: none;
+            color: #e74c3c;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>    
+        <h2>Completing authentication</h2>
+        <p id="error"></p>
+    </div>
+</body>
+</html>`
+
+        return new Response(html, {
+            status: 200,
+            headers: {
+                'Content-Type': 'text/html',
             },
         })
-
-        cookies.forEach(cookie => {
-            res.headers.append('Set-Cookie', cookie)
-        })
-
-        return res
     }
 }

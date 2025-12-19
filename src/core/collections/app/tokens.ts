@@ -1,3 +1,19 @@
+/**
+ * @deprecated WORK IN PROGRESS - NOT YET IMPLEMENTED
+ * 
+ * App-level verification tokens collection for email verification,
+ * password resets, and magic links.
+ * Part of the incomplete appAuthPlugin.
+ * 
+ * TODO:
+ * - Implement email verification flow
+ * - Add password reset token generation/validation
+ * - Add magic link authentication
+ * - Add token expiration logic
+ * 
+ * Status: Collection structure defined but not actively used.
+ */
+
 import { CollectionConfig } from 'payload'
 
 export function buildVerificationCollection(verificationCollectionSlug: string) {

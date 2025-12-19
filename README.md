@@ -6,10 +6,83 @@
 # Authentication plugin for PayloadCMS
 This plugin is designed to simplify the integration of multiple Open Authorization (OAuth) and OpenID Connect providers with Payload CMS. Developers can quickly and effortlessly set up authentication mechanisms by leveraging pre-configured providers.
 
+## ⚠️ Important for Version 0.7.0+
+
+If you're upgrading from an earlier version or installing for the first time, please note:
+
+### What Changed
+- **Session Management**: Now uses a custom OAuth authentication strategy with `__oauth-session` cookie
+- **No Code Changes Required**: The plugin handles authentication automatically - just configure providers as before
+- **Security Headers Recommended**: For production deployments, add security headers to your `next.config.mjs` (see [SECURITY.md](./SECURITY.md))
+
+### For Existing Users
+Your existing configuration will continue to work. However, for production deployments, we strongly recommend:
+
+1. **Add security headers** to your `next.config.mjs`:
+   ```javascript
+   const nextConfig = {
+     async headers() {
+       return [{
+         source: '/(.*)',
+         headers: [
+           {
+             key: 'Content-Security-Policy',
+             value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; worker-src 'self' blob:",
+           },
+           { key: 'X-Content-Type-Options', value: 'nosniff' },
+           { key: 'X-Frame-Options', value: 'DENY' },
+           { key: 'X-XSS-Protection', value: '1; mode=block' },
+           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
+         ],
+       }]
+     },
+   }
+   ```
+
+2. **Review security documentation**: See [SECURITY.md](./SECURITY.md) for:
+   - Why security headers are important
+   - Production deployment checklist
+   - Security best practices
+
+### For New Users
+Follow the installation instructions below - everything works out of the box!
+
 ## How it works?
 The initial goal in developing this plugin was to abstract its configurations and the resources it utilizes, minimizing the setup required by developers. This way, integrating any supported provider with Payload CMS involves minimal effort.
 
 > There is a scope for future improvements to make every implementation more and more flexible and straightforward
+
+### Authentication Architecture
+
+This plugin uses a **custom OAuth authentication strategy** that establishes persistent sessions via the `__oauth-session` cookie. Here's how the complete flow works:
+
+1. **User initiates OAuth login** → Redirected to provider (Auth0, Google, GitHub, etc.)
+2. **Provider authenticates** → Redirects back to `/api/admin/oauth/callback/:provider`
+3. **Plugin validates OAuth** → Creates/finds user, generates 2-hour JWT session token
+4. **Client-side cookie setting** → HTML page sets `__oauth-session` cookie via JavaScript
+5. **Authentication confirmation** → Calls `/api/admin/oauth/login` to verify authentication
+6. **Session established** → User redirected to admin panel, stays logged in for 2 hours
+7. **Persistent authentication** → OAuth strategy validates cookie on every request
+
+**Session Cookie**: `__oauth-session`
+- **Not HttpOnly** (required for client-side setting due to architectural limitation*)
+- **2-hour expiration** (matches Payload's default session duration)
+- **Signed JWT** (tamper-proof, contains userId, email, collection)
+- **SameSite=Lax** (CSRF protection)
+
+*See [COOKIE_INVESTIGATION_REPORT.md](./COOKIE_INVESTIGATION_REPORT.md) for technical details about why server-side cookie setting doesn't work with Payload custom endpoints.
+
+**Security Considerations**:
+- While `__oauth-session` is not HttpOnly, it's still secure because:
+  - JWT is signed and validated server-side
+  - 2-hour expiration limits exposure window
+  - SameSite=Lax prevents CSRF attacks
+  - XSS attacks would require existing vulnerability in your application
+- **Production deployment**: See [SECURITY.md](./SECURITY.md) for:
+  - Recommended security headers configuration
+  - Detailed risk assessment and mitigations
+  - Production security checklist
+  - Best practices for OAuth authentication
 
 ### Collections
 This plugin creates an Accounts collection with the slug `accounts`, which includes all necessary fields. This collection establishes a one-to-one relationship with the Users collection, allowing existing users to sign in with multiple providers. The Accounts collection stores information such as the provider's name and issuer, and it links the account to the user upon first sign-in.
@@ -157,6 +230,79 @@ Ordered according to the priority
 - Support magic link [Feat] ⚙
 - Support Passkey sign-in [Feat]❓
 - Support front-end app authentication [Feat] ⚙
+
+## Troubleshooting
+
+### Authentication fails after OAuth login
+
+**Symptoms**: After OAuth provider authentication, user is redirected back to login page instead of admin panel.
+
+**Possible causes**:
+1. **Role restrictions**: If using Auth0 with `expectedRoles` configuration, ensure the user has one of the required roles
+2. **Cookie not being set**: Check browser DevTools → Application → Cookies → `__oauth-session` should be present
+3. **JWT validation failing**: Check server logs for `[OAuth Strategy]` errors
+
+**Solutions**:
+- Verify Auth0 user has correct roles in Auth0 dashboard
+- Clear all cookies and try again
+- Check that `AUTH_BASE_URL` environment variable matches your actual domain
+- Ensure Payload secret is consistent between builds
+
+### Session expires too quickly
+
+**Symptom**: User is logged out after a short time.
+
+**Cause**: The `__oauth-session` cookie has a 2-hour expiration by default.
+
+**Solution**: Currently, session duration is fixed at 2 hours (7200 seconds). To extend this, you would need to modify `OAUTH_SESSION_MAX_AGE` constant in `src/core/auth/oauthStrategy.ts`.
+
+### OAuth strategy logs authentication 3 times per page load
+
+**Symptom**: Server logs show `[OAuth Strategy] Successfully authenticated user:` multiple times.
+
+**This is normal behavior**: Payload authenticates each API request individually:
+- `/admin` page render (1st auth)
+- `/api/users/me` endpoint (2nd auth)
+- `/api/payload-preferences/nav` endpoint (3rd auth)
+
+### Security: Why is `__oauth-session` not HttpOnly?
+
+**Answer**: Due to an architectural limitation in Payload CMS custom endpoints (Set-Cookie headers are stripped), we must set the cookie client-side via JavaScript. This means it cannot be HttpOnly.
+
+**Mitigation**: The cookie is still secure because:
+- JWT is cryptographically signed and validated server-side
+- 2-hour expiration limits exposure
+- SameSite=Lax prevents CSRF
+- HTTPS (in production) adds transport encryption
+
+For full technical details, see [COOKIE_INVESTIGATION_REPORT.md](./COOKIE_INVESTIGATION_REPORT.md).
+
+### Cookies not being cleared after logout
+
+**Symptom**: OAuth cookies remain in browser after logout.
+
+**Solution**: Manually clear `__oauth-session`, `__session-code-verifier`, and `__session-oauth-state` cookies, or close the browser (incognito mode).
+
+### Development vs Production differences
+
+**Development** (HTTP localhost):
+- `__oauth-session` has `Secure=false`
+- Auth0 callback URL: `http://localhost:3000/api/admin/oauth/callback/auth0`
+
+**Production** (HTTPS):
+- `__oauth-session` automatically gets `Secure=true` flag
+- Auth0 callback URL: `https://yourdomain.com/api/admin/oauth/callback/auth0`
+- **Must update callback URL** in Auth0 dashboard for production domain
+
+## Technical Documentation
+
+For developers interested in the implementation details:
+
+- **[SECURITY.md](./SECURITY.md)** - Security considerations, recommended headers, risk assessment, and production checklist
+- **[COOKIE_INVESTIGATION_REPORT.md](./COOKIE_INVESTIGATION_REPORT.md)** - Full investigation of the Set-Cookie header limitation (8 failed attempts documented)
+- **[ALTERNATIVE_APPROACHES.md](./ALTERNATIVE_APPROACHES.md)** - Analysis of 5 different solution approaches, with rationale for chosen approach
+- **[IMPLEMENTATION_COMPLETE.md](./IMPLEMENTATION_COMPLETE.md)** - Complete implementation summary with testing results
+- **[SESSION_SUMMARY.md](./SESSION_SUMMARY.md)** - Overall session summary with lessons learned
 
 ## 🤝 Contributing
 If you want to add contributions to this repository, please follow the instructions in [contributing.md](./CONTRIBUTING.md).
