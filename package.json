@@ -1,12 +1,15 @@
 {
-  "name": "@papercup/payload-auth-plugin",
-  "version": "0.7.0",
-  "author": "Papercup <claudiu@papercup.com>",
+  "name": "@rws-papercup/payload-auth-plugin",
+  "version": "0.1.0",
+  "author": "Papercup <papercup.team@rws.com>",
   "type": "module",
   "license": "MIT",
-  "homepage:": "https://github.com/papercup-ai/payload-auth-plugin",
+  "homepage": "https://github.com/papercup-ai/payload-auth-plugin",
   "repository": "git@github.com:papercup-ai/payload-auth-plugin.git",
   "description": "Authentication plugin for Payload CMS",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "keywords": [
