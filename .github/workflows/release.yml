@@ -15,26 +15,38 @@ on:
 jobs:
   release:
     runs-on: ubuntu-20.04
+    permissions:
+      contents: write  # git operations and creating releases
+      id-token: write  # OIDC trusted publishing to npm
     steps:
     - uses: pnpm/action-setup@v4
       with:
         version: 8
 
     - name: Checkout source code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # so release-it can access git history
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Install latest npm for trusted publishing
+      run: npm install -g npm@latest
+
+    - name: Verify npm version
+      run: npm --version
 
     - name: Install the dependencies
       run: pnpm install
 
-    - name: Initialise the NPM config
-      run: pnpm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
-      env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
     - name: Initialize Git user
       run: |
-        git config --global user.email "shubpramanik241@gmail.com"
-        git config --global user.name "sourabpramanik"
+        git config --global user.email "papercup.team@rws.com"
+        git config --global user.name "papercup.team"
 
     - name: Log git status
       run: git status
@@ -43,19 +55,16 @@ jobs:
       if: github.event.inputs.release_type == 'major'
       run: pnpm release:major
       env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Run release minor
       if: github.event.inputs.release_type == 'minor'
       run: pnpm release:minor
       env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Run release patch
       if: github.event.inputs.release_type == 'patch'
       run: pnpm release:patch
       env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
