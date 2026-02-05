@@ -67,7 +67,7 @@
     "release:patch": "release-it patch"
   },
   "peerDependencies": {
-    "payload": "3.68.5"
+    "payload": "3.74.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
@@ -87,7 +87,7 @@
     "globals": "^16.5.0",
     "jest": "^30.2.0",
     "next": "16.0.10",
-    "payload": "3.68.5",
+    "payload": "3.74.0",
     "prettier": "^3.7.4",
     "react": "^19.2.3",
     "release-it": "^19.1.0",
