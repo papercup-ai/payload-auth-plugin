@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.68.5",
-    "@payloadcms/next": "^3.68.5",
+    "@payloadcms/next": "^3.78.0",
     "@payloadcms/payload-cloud": "^3.68.5",
     "@payloadcms/richtext-lexical": "^3.68.5",
     "cross-env": "^10.1.0",
