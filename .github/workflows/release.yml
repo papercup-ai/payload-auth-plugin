@@ -14,14 +14,14 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write  # git operations and creating releases
       id-token: write  # OIDC trusted publishing to npm
     steps:
     - uses: pnpm/action-setup@v4
       with:
-        version: 8
+        version: 9
 
     - name: Checkout source code
       uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version-file: .nvmrc
         registry-url: 'https://registry.npmjs.org'
 
     - name: Install latest npm for trusted publishing
