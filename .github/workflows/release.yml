@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       release_type:
-        description: 'Release type (major/minor/patch)'
+        description: 'Release type (major/minor/patch/beta)'
         required: true
         default: 'minor'
         type: choice
@@ -11,6 +11,7 @@ on:
         - major
         - minor
         - patch
+        - beta
 
 jobs:
   release:
@@ -68,3 +69,7 @@ jobs:
       run: pnpm release:patch
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Run release beta
+      if: github.event.inputs.release_type == 'beta'
+      run: pnpm release prepatch --preRelease=beta --npm.tag=beta --no-git.push --no-github.release --plugins.@release-it/conventional-changelog.ignoreRecommendedBump
